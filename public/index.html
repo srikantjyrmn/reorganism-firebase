@@ -4,27 +4,133 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Simple Chat Prototype</title>
+  <title>Entropic Chat Interface</title>
   <style>
-    #chat-history {
-      height: 300px;
-      overflow-y: auto;
-      border: 1px solid #ccc;
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f0f0f0;
+    }
+
+    .chat-container {
+      max-width: 800px;
+      margin: 20px auto;
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      display: flex;
+      flex-direction: column;
+      height: 90vh;
+    }
+
+    .chat-header {
+      background-color: #4CAF50;
+      color: white;
       padding: 10px;
-      margin-bottom: 10px;
+      border-top-left-radius: 10px;
+      border-top-right-radius: 10px;
+    }
+
+    .chat-messages {
+      flex-grow: 1;
+      overflow-y: auto;
+      padding: 20px;
+    }
+
+    .message {
+      max-width: 70%;
+      margin-bottom: 20px;
+      clear: both;
+    }
+
+    .user-message {
+      float: right;
+      background-color: #DCF8C6;
+      border-radius: 20px 20px 0 20px;
+      padding: 10px 15px;
+    }
+
+    .bot-message {
+      float: left;
+      background-color: #E8E8E8;
+      border-radius: 20px 20px 20px 0;
+      padding: 10px 15px;
+    }
+
+    .chat-input {
+      display: flex;
+      padding: 20px;
+      border-top: 1px solid #e0e0e0;
+    }
+
+    #user-input {
+      flex-grow: 1;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 20px;
+      margin-right: 10px;
+    }
+
+    button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 20px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    #file-upload {
+      display: none;
+    }
+
+    .file-upload-label {
+      background-color: #008CBA;
+      color: white;
+      padding: 10px;
+      border-radius: 20px;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+
+    .file-upload-label:hover {
+      background-color: #007B9A;
+    }
+
+    #agent-type {
+      padding: 10px;
+      border-radius: 20px;
+      border: 1px solid #ccc;
+      margin-right: 10px;
     }
   </style>
 </head>
 
 <body>
-  <select id="agent-type">
-    <option value="simple">Simple</option>
-    <option value="function">Function</option>
-    <option value="structure">Structure</option>
-  </select>
-  <div id="chat-history"></div>
-  <input type="text" id="user-input" placeholder="Type your message...">
-  <button onclick="sendMessage()">Send</button>
+  <div class="chat-container">
+    <div class="chat-header">
+      <h2>Entropic Chat</h2>
+    </div>
+    <div class="chat-messages" id="chat-history"></div>
+    <div class="chat-input">
+      <select id="agent-type">
+        <option value="simple">Simple</option>
+        <option value="function">Function</option>
+        <option value="structure">Structure</option>
+      </select>
+      <label for="file-upload" class="file-upload-label">
+        📎 Upload
+      </label>
+      <input type="file" id="file-upload" multiple>
+      <input type="text" id="user-input" placeholder="Type your message...">
+      <button onclick="sendMessage()">Send</button>
+    </div>
+  </div>
 
   <script type="module">
     // Import the functions you need from the SDKs you need
@@ -47,38 +153,27 @@
     const app = initializeApp(firebaseConfig);
     const functions = getFunctions(app);
 
-    const chatHistory = document.getElementById('chat-history');
-    const userInput = document.getElementById('user-input');
-    const agentType = document.getElementById('agent-type');
+    // Initialize the Vertex AI service
+    const vertexAI = getVertexAI(firebaseApp);
 
-    window.sendMessage = async function () {
-      const message = userInput.value.trim();
-      if (message) {
-        appendMessage('User', message);
-        userInput.value = '';
+    // Initialize the generative model with a model that supports your use case
+    // Gemini 1.5 models are versatile and can be used with all API capabilities
+    const model = getGenerativeModel(vertexAI, { model: "gemini-1.5-flash" });
+    // Wrap in an async function so you can use await
+    async function run() {
+      // Provide a prompt that contains text
+      const prompt = "Write a story about a magic backpack."
 
-        try {
-          console.log('Calling chat function...');
-          const chat = httpsCallable(functions, 'chat');
-          const result = await chat({
-            agent_type: agentType.value,
-            message: message
-          });
-          console.log('Received response:', result);
-          appendMessage('Bot', result.data);
-        } catch (error) {
-          console.error('Detailed error:', error);
-          appendMessage('Bot', 'Sorry, an error occurred: ' + error.message);
-        }
-      }
+      // To generate text output, call generateContent with the text input
+      const result = await model.generateContent(prompt);
+
+      const response = result.response;
+      const text = response.text();
+      console.log(text);
     }
 
-    function appendMessage(sender, message) {
-      const messageElement = document.createElement('p');
-      messageElement.innerHTML = `<strong>${sender}:</strong> ${message}`;
-      chatHistory.appendChild(messageElement);
-      chatHistory.scrollTop = chatHistory.scrollHeight;
-    }
+    run();
+
   </script>
 </body>
 
