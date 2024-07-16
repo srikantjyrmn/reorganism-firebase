@@ -5,15 +5,18 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Reorganism.in - AI Agency</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto+Mono&display=swap"
+    rel="stylesheet">
   <style>
     body,
     html {
       margin: 0;
       padding: 0;
       height: 100%;
-      font-family: Arial, sans-serif;
+      font-family: 'Roboto Mono', monospace;
       overflow: hidden;
       background-color: #000;
+      color: #0f0;
     }
 
     #matrix-background {
@@ -27,14 +30,39 @@
     #content {
       position: relative;
       z-index: 1;
-      color: white;
       text-align: center;
       padding-top: 20vh;
     }
 
     #logo {
+      font-family: 'Orbitron', sans-serif;
       font-size: 4em;
+      font-weight: 700;
+      color: #0f0;
+      position: relative;
       animation: float 3s ease-in-out infinite;
+    }
+
+    #logo::before,
+    #logo::after {
+      content: 'reorganism.in';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      overflow: hidden;
+    }
+
+    #logo::before {
+      left: 2px;
+      text-shadow: -2px 0 #ff00ff;
+      animation: glitch-1 2s infinite linear alternate-reverse;
+    }
+
+    #logo::after {
+      left: -2px;
+      text-shadow: 2px 0 #00ffff;
+      animation: glitch-2 3s infinite linear alternate-reverse;
     }
 
     @keyframes float {
@@ -51,15 +79,74 @@
       }
     }
 
+    @keyframes glitch-1 {
+      0% {
+        clip-path: inset(20% 0 30% 0);
+      }
+
+      20% {
+        clip-path: inset(60% 0 1% 0);
+      }
+
+      40% {
+        clip-path: inset(25% 0 58% 0);
+      }
+
+      60% {
+        clip-path: inset(91% 0 4% 0);
+      }
+
+      80% {
+        clip-path: inset(3% 0 83% 0);
+      }
+
+      100% {
+        clip-path: inset(45% 0 24% 0);
+      }
+    }
+
+    @keyframes glitch-2 {
+      0% {
+        clip-path: inset(82% 0 2% 0);
+      }
+
+      20% {
+        clip-path: inset(35% 0 35% 0);
+      }
+
+      40% {
+        clip-path: inset(68% 0 12% 0);
+      }
+
+      60% {
+        clip-path: inset(1% 0 70% 0);
+      }
+
+      80% {
+        clip-path: inset(37% 0 45% 0);
+      }
+
+      100% {
+        clip-path: inset(90% 0 6% 0);
+      }
+    }
+
     nav {
       margin-top: 2em;
     }
 
     nav a {
-      color: white;
+      color: #0f0;
       text-decoration: none;
       margin: 0 1em;
       font-size: 1.2em;
+      font-family: 'Orbitron', sans-serif;
+      transition: all 0.3s ease;
+    }
+
+    nav a:hover {
+      color: #fff;
+      text-shadow: 0 0 10px #0f0, 0 0 20px #0f0;
     }
 
     #chat-box {
@@ -69,17 +156,27 @@
     #chat-input {
       padding: 10px;
       width: 300px;
-      border: none;
+      border: 2px solid #0f0;
       border-radius: 5px 0 0 5px;
+      background-color: rgba(0, 0, 0, 0.7);
+      color: #0f0;
+      font-family: 'Roboto Mono', monospace;
     }
 
     #chat-button {
       padding: 10px 20px;
-      background-color: #4CAF50;
-      color: white;
+      background-color: #0f0;
+      color: black;
       border: none;
       border-radius: 0 5px 5px 0;
       cursor: pointer;
+      font-family: 'Orbitron', sans-serif;
+      transition: all 0.3s ease;
+    }
+
+    #chat-button:hover {
+      background-color: #00ff00;
+      box-shadow: 0 0 10px #0f0;
     }
 
     #chat-window {
@@ -90,10 +187,11 @@
       width: 300px;
       height: 400px;
       background-color: rgba(0, 0, 0, 0.8);
-      border: 1px solid #0f0;
+      border: 2px solid #0f0;
       border-radius: 10px;
       overflow: hidden;
       flex-direction: column;
+      font-family: 'Roboto Mono', monospace;
     }
 
     #chat-messages {
@@ -116,6 +214,7 @@
       border-radius: 3px;
       background-color: black;
       color: #0f0;
+      font-family: 'Roboto Mono', monospace;
     }
 
     #chat-input-area button {
@@ -126,6 +225,7 @@
       border: none;
       border-radius: 3px;
       cursor: pointer;
+      font-family: 'Orbitron', sans-serif;
     }
   </style>
 </head>
@@ -135,7 +235,7 @@
   <div id="content">
     <h1 id="logo">reorganism.in</h1>
     <nav>
-      <a href="#about">About</a>
+      <a href="about.html">About</a>
       <a href="#coming-soon">Coming Soon</a>
     </nav>
     <div id="chat-box">
@@ -152,13 +252,45 @@
     </div>
   </div>
 
-  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-analytics-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-functions-compat.js"></script>
   <script src="firebase-config.js"></script>
 
   <script>
+    // Firebase initialization
+    function initializeFirebase() {
+      console.log("Initializing Firebase");
+      if (typeof firebaseConfig === 'undefined') {
+        console.error('Firebase configuration is not defined. Please check your firebase-config.js file.');
+        return false;
+      }
+
+      try {
+        if (!firebase.apps.length) {
+          firebase.initializeApp(firebaseConfig);
+          console.log('Firebase initialized successfully.');
+        } else {
+          console.log('Firebase already initialized.');
+        }
+
+        if (firebase.functions) {
+          console.log('Firebase Cloud Functions are available.');
+          // Uncomment the next line if you need to set a specific region
+          // firebase.functions().useEmulator("localhost", 5001);
+        } else {
+          console.error('Firebase Cloud Functions are not available. Please check your Firebase configuration.');
+        }
+        return true;
+      } catch (error) {
+        console.error('Error initializing Firebase:', error);
+        return false;
+      }
+    }
+
+    // Ensure Firebase is initialized before using it
+    let firebaseInitialized = false;
+
     // Matrix background
     const canvas = document.getElementById('matrix-background');
     const ctx = canvas.getContext('2d');
@@ -166,7 +298,7 @@
     canvas.height = window.innerHeight;
     canvas.width = window.innerWidth;
 
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%^&*()_+-=[]{}|;:,.<>?';
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%^&*()_+-=[]{ }|;:,.<>?';
     const fontSize = 14;
     const columns = canvas.width / fontSize;
 
@@ -201,6 +333,91 @@
     });
 
     // Chat functionality
+    async function sendMessageToFunction(message) {
+      console.log("sendMessageToFunction called with message:", message);
+      if (!firebaseInitialized) {
+        console.log("Firebase not initialized. Attempting to initialize...");
+        firebaseInitialized = initializeFirebase();
+        if (!firebaseInitialized) {
+          return "Error: Unable to initialize Firebase. Please check your configuration.";
+        }
+      }
+
+      try {
+        if (!firebase.functions) {
+          console.error("Firebase functions not available");
+          return "Firebase functions not available. Please check your setup.";
+        }
+
+        const chatFunction = firebase.functions().httpsCallable('chat');
+        console.log("Calling Firebase function 'chat'");
+        const result = await chatFunction({ message: message });
+        console.log("Firebase function result:", result);
+
+        if (result.data && result.data.result) {
+          return result.data.result;
+        } else {
+          console.error("Unexpected result structure:", result);
+          return "Received an unexpected response structure from the server.";
+        }
+      } catch (error) {
+        console.error("Error in sendMessageToFunction:", error);
+        return `Error: ${error.message || 'Unknown error occurred'}`;
+      }
+    }
+
+    function addMessage(message, isUser = false, isProcessing = false) {
+      const messageElement = document.createElement('div');
+      messageElement.textContent = message;
+      messageElement.style.marginBottom = '10px';
+      messageElement.style.textAlign = isUser ? 'right' : 'left';
+      messageElement.style.color = isUser ? '#0ff' : '#0f0';
+      if (isProcessing) {
+        messageElement.id = 'processing-message';
+      }
+      chatMessages.appendChild(messageElement);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function removeProcessingMessage() {
+      const processingMessage = document.getElementById('processing-message');
+      if (processingMessage) {
+        processingMessage.remove();
+      }
+    }
+
+    async function openChat() {
+      console.log("openChat function called");
+      const initialMessage = chatInput.value.trim();
+      if (initialMessage) {
+        chatWindow.style.display = 'flex';
+        addMessage(initialMessage, true);
+        chatInput.value = '';
+        addMessage("Processing your message...", false, true);
+        console.log("Sending initial message to function:", initialMessage);
+        const response = await sendMessageToFunction(initialMessage);
+        console.log("Received response from function:", response);
+        removeProcessingMessage();
+        addMessage(response);
+      }
+    }
+
+    async function handleUserInput() {
+      console.log("handleUserInput function called");
+      const message = chatWindowInput.value.trim();
+      if (message) {
+        addMessage(message, true);
+        chatWindowInput.value = '';
+        addMessage("Processing your message...", false, true);
+        console.log("Sending message to function:", message);
+        const response = await sendMessageToFunction(message);
+        console.log("Received response from function:", response);
+        removeProcessingMessage();
+        addMessage(response);
+      }
+    }
+
+    // Ensure chat elements are properly referenced
     const chatButton = document.getElementById('chat-button');
     const chatInput = document.getElementById('chat-input');
     const chatWindow = document.getElementById('chat-window');
@@ -208,48 +425,7 @@
     const chatWindowInput = document.getElementById('chat-window-input');
     const chatWindowSend = document.getElementById('chat-window-send');
 
-    async function sendMessageToFunction(message) {
-      try {
-        const chatFunction = firebase.functions().httpsCallable('chat');
-        const result = await chatFunction({ message: message });
-        return result.data.result;
-      } catch (error) {
-        console.error("Error calling Firebase function:", error);
-        return "Sorry, there was an error processing your message.";
-      }
-    }
-
-    async function openChat() {
-      const initialMessage = chatInput.value.trim();
-      if (initialMessage) {
-        chatWindow.style.display = 'flex';
-        addMessage(initialMessage, true);
-        chatInput.value = '';
-        const response = await sendMessageToFunction(initialMessage);
-        addMessage(response);
-      }
-    }
-
-    function addMessage(message, isUser = false) {
-      const messageElement = document.createElement('div');
-      messageElement.textContent = message;
-      messageElement.style.marginBottom = '10px';
-      messageElement.style.textAlign = isUser ? 'right' : 'left';
-      messageElement.style.color = isUser ? '#0ff' : '#0f0';
-      chatMessages.appendChild(messageElement);
-      chatMessages.scrollTop = chatMessages.scrollHeight;
-    }
-
-    async function handleUserInput() {
-      const message = chatWindowInput.value.trim();
-      if (message) {
-        addMessage(message, true);
-        chatWindowInput.value = '';
-        const response = await sendMessageToFunction(message);
-        addMessage(response);
-      }
-    }
-
+    // Add event listeners
     chatButton.addEventListener('click', openChat);
     chatInput.addEventListener('keypress', (e) => {
       if (e.key === 'Enter') {
@@ -263,28 +439,13 @@
       }
     });
 
-    // Firebase initialization
+
+    // Event listeners
     document.addEventListener('DOMContentLoaded', (event) => {
-      if (typeof firebaseConfig === 'undefined') {
-        console.error('Firebase configuration is not defined. Please check your firebase-config.js file.');
-        return;
-      }
-
-      try {
-        firebase.initializeApp(firebaseConfig);
-
-        if (firebase.analytics && firebase.analytics.isSupported()) {
-          firebase.analytics();
-          console.log('Firebase Analytics initialized successfully.');
-        } else {
-          console.log('Firebase Analytics is not supported in this environment.');
-        }
-
-        console.log('Firebase initialized successfully.');
-      } catch (error) {
-        console.error('Error initializing Firebase:', error);
-      }
+      console.log("DOMContentLoaded event fired");
+      firebaseInitialized = initializeFirebase();
     });
+
   </script>
 </body>
 

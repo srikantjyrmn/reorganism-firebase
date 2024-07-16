@@ -1,2 +1,6 @@
-firebase_functions~=0.1.0
+firebase-functions
+requests==2.26.0
 openai
+requests==2.26.0
+python-dotenv==0.19.1
+anthropic
