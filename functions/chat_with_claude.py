@@ -12,11 +12,11 @@ def chat_with_Openai(message):
     print(f"API Key found: {api_key[:5]}...") # Print first 5 characters for verification
 
     # Set the OpenAI API key
-    openai.api_key = api_key
+    #openai.api_key = api_key
 
     try:
         print("Sending request to OpenAI API...")
-        response = OpenAI.chat.completions.create(
+        response = OpenAI(api_key = api_key).chat.completions.create(
             model="gpt-4",
             messages=[
                 {"role": "system", "content": "You are a world-class poet. Respond only with short poems."},
